@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="blue"> <!-- Default theme is set here -->
+<head>
+    <meta charset="UTF-8">
+    <!-- MODIFIED: Added viewport-fit=cover for safe-area support -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, viewport-fit=cover">
+    <title>Prompt Studio</title>
+    <link rel="icon" type="image/x-icon" href="https://haldar-iq.netlify.app/file_000000009dd461f782dfc44f1f661347.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        /* --- THEME COLOR DEFINITIONS (MODIFIED FOR TRANSPARENCY) --- */
+
+        /* --- Blue Theme (Default) --- */
+        html[data-theme="blue"]:not(.light) {
+            --c-primary: #3b82f6; --c-secondary: #60a5fa; --c-bg-primary: rgba(15, 23, 42, 0.7); --c-bg-secondary: rgba(30, 41, 59, 0.6); --c-text-primary: #e2e8f0; --c-text-secondary: #94a3b8; --c-border: rgba(51, 65, 85, 0.6); --c-shadow-light: rgba(59, 130, 246, 0.2); --c-shadow-heavy: rgba(0,0,0, 0.3); --c-skeleton: #283345;
+        }
+        html[data-theme="blue"].light {
+            --c-primary: #3b82f6; --c-secondary: #60a5fa; --c-bg-primary: rgba(240, 249, 255, 0.7); --c-bg-secondary: rgba(255, 255, 255, 0.6); --c-text-primary: #0f172a; --c-text-secondary: #475569; --c-border: rgba(219, 234, 254, 0.7); --c-shadow-light: rgba(59, 130, 246, 0.1); --c-shadow-heavy: rgba(100, 116, 139, 0.15); --c-skeleton: #e0f2fe;
+        }
+
+        /* --- Green Theme --- */
+        html[data-theme="green"]:not(.light) {
+            --c-primary: #22c55e; --c-secondary: #4ade80; --c-bg-primary: rgba(6, 34, 19, 0.7); --c-bg-secondary: rgba(16, 58, 37, 0.6); --c-text-primary: #dcfce7; --c-text-secondary: #86efac; --c-border: rgba(21, 128, 61, 0.6); --c-shadow-light: rgba(34, 197, 94, 0.2); --c-shadow-heavy: rgba(0,0,0, 0.3); --c-skeleton: #1c4532;
+        }
+        html[data-theme="green"].light {
+            --c-primary: #16a34a; --c-secondary: #22c55e; --c-bg-primary: rgba(240, 253, 244, 0.7); --c-bg-secondary: rgba(255, 255, 255, 0.6); --c-text-primary: #052e16; --c-text-secondary: #475569; --c-border: rgba(187, 247, 208, 0.7); --c-shadow-light: rgba(22, 163, 74, 0.1); --c-shadow-heavy: rgba(100, 116, 139, 0.15); --c-skeleton: #dcfce7;
+        }
+
+        /* --- Purple Theme --- */
+        html[data-theme="purple"]:not(.light) {
+            --c-primary: #8b5cf6; --c-secondary: #a78bfa; --c-bg-primary: rgba(30, 27, 75, 0.7); --c-bg-secondary: rgba(49, 46, 129, 0.6); --c-text-primary: #e0e7ff; --c-text-secondary: #c7d2fe; --c-border: rgba(67, 56, 202, 0.6); --c-shadow-light: rgba(139, 92, 246, 0.2); --c-shadow-heavy: rgba(0,0,0, 0.3); --c-skeleton: #454194;
+        }
+        html[data-theme="purple"].light {
+            --c-primary: #7c3aed; --c-secondary: #8b5cf6; --c-bg-primary: rgba(245, 243, 255, 0.7); --c-bg-secondary: rgba(255, 255, 255, 0.6); --c-text-primary: #2e1065; --c-text-secondary: #475569; --c-border: rgba(221, 214, 254, 0.7); --c-shadow-light: rgba(124, 58, 237, 0.1); --c-shadow-heavy: rgba(100, 116, 139, 0.15); --c-skeleton: #e9e5ff;
+        }
+
+        /* --- Orange Theme --- */
+        html[data-theme="orange"]:not(.light) {
+            --c-primary: #f97316; --c-secondary: #fb923c; --c-bg-primary: rgba(67, 20, 7, 0.7); --c-bg-secondary: rgba(124, 45, 18, 0.6); --c-text-primary: #fff7ed; --c-text-secondary: #fed7aa; --c-border: rgba(154, 52, 18, 0.6); --c-shadow-light: rgba(249, 115, 22, 0.2); --c-shadow-heavy: rgba(0,0,0, 0.3); --c-skeleton: #864523;
+        }
+        html[data-theme="orange"].light {
+            --c-primary: #f97316; --c-secondary: #fb923c; --c-bg-primary: rgba(255, 247, 237, 0.7); --c-bg-secondary: rgba(255, 255, 255, 0.6); --c-text-primary: #7c2d12; --c-text-secondary: #475569; --c-border: rgba(254, 215, 170, 0.7); --c-shadow-light: rgba(249, 115, 22, 0.1); --c-shadow-heavy: rgba(100, 116, 139, 0.15); --c-skeleton: #ffedd5;
+        }
+
+        /* --- Base & App Container --- */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Inter', system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            
+            background: #0f0c29;
+            background: -webkit-linear-gradient(to right, #24243e, #302b63, #0f0c29);
+            background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
+            background-attachment: fixed;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* --- Animated Background Blobs --- */
+        .blob-c {
+            min-height: 100vh;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            filter: blur(40px);
+            z-index: 0;
+        }
+
+        .blob {
+            background: #4F46E5;
+            height: 250px;
+            width: 350px;
+            border-radius: 40% 60% 60% 40% / 70% 30% 70% 30%;
+            position: absolute;
+            left: 10%;
+            top: 5%;
+            animation:-move 15s infinite alternate;
+            will-change: transform;
+        }
+        .blob.one{ top: 20vh; left: 60%; background: #4338CA; animation-duration: 12s; }
+        .blob.two{ top: 70vh; left: 15%; background: #A78BFA; animation-duration: 10s; }
+        .blob.three{ top: 50vh; left: 80%; background: #A78BFA; animation-duration: 8s; height: 150px; width: 200px;}
+        .blob.four{ top: 80vh; left: 50%; background: #4338CA; animation-duration: 18s; }
+        .blob.five{ top: -10vh; left: 30%; background: #4F46E5; animation-duration: 20s; }
+
+        @keyframes -move {
+          from { transform: rotate(0deg) scale(1.2) skew(1deg) }
+          to { transform: rotate(350deg) scale(0.8) skew(-5deg) }
+        }
+
+        /* --- MODIFIED: Layout & Responsiveness Fixes --- */
+        .mobile-app-container {
+            width: 100%;
+            height: 100dvh; /* Use dynamic viewport height for mobile */
+            background-color: var(--c-bg-primary);
+            color: var(--c-text-primary);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease; /* Smooth transition for resizing */
+        }
+        
+        /* On larger screens, turn the container into a centered card */
+        @media (min-width: 500px) and (min-height: 700px) {
+            .mobile-app-container {
+                width: 100%;
+                max-width: 450px;
+                height: 90vh;
+                max-height: 850px;
+                border-radius: 1.5rem;
+                box-shadow: 0 20px 60px var(--c-shadow-heavy);
+                border: 1px solid var(--c-border);
+            }
+        }
+
+        /* --- Header --- */
+        .app-header {
+            flex-shrink: 0;
+            padding: 1rem 1.5rem;
+            /* MODIFIED: Add padding for the top safe area (notch) */
+            padding-top: calc(1rem + env(safe-area-inset-top));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--c-bg-secondary);
+            border-bottom: 1px solid var(--c-border);
+            position: relative;
+        }
+        html:not(.light) .app-header {
+            background: transparent;
+        }
+        .app-header h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--c-primary);
+        }
+        html:not(.light) .app-header h1 {
+            text-shadow: 0 0 10px var(--c-shadow-light), 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        #themeToggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            /* MODIFIED: Adjust position to respect safe area padding */
+            padding-top: env(safe-area-inset-top);
+        }
+        #themeToggle:hover {
+            color: var(--c-primary);
+        }
+
+        /* --- Main Content & Views --- */
+        .app-main-content { flex-grow: 1; overflow-y: auto; padding: 1.5rem; padding-bottom: 3rem; }
+        .app-view { display: none; }
+        .app-view.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- Bottom Navigation --- */
+        .bottom-nav {
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 0.5rem 0;
+            /* MODIFIED: Add padding for the bottom safe area (home bar) */
+            padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+            background-color: var(--c-bg-secondary);
+            border-top: 1px solid var(--c-border);
+            box-shadow: 0 -5px 20px var(--c-shadow-heavy);
+        }
+        .nav-button { display: flex; flex-direction: column; align-items: center; background: none; border: none; cursor: pointer; padding: 0.25rem 0.5rem; color: var(--c-text-secondary); transition: color 0.3s ease, transform 0.2s ease; width: 70px; }
+        .nav-button:hover { transform: translateY(-2px); }
+        .nav-button i { font-size: 1.4rem; margin-bottom: 0.25rem; transition: transform 0.3s ease; }
+        .nav-button span { font-size: 0.7rem; font-weight: 600; }
+        .nav-button.active { color: var(--c-primary); }
+        .nav-button.active i { transform: scale(1.1); }
+
+        /* --- Common Styles --- */
+        .card { background-color: var(--c-bg-secondary); border-radius: 0.75rem; padding: 1.5rem; box-shadow: 0 4px 15px var(--c-shadow-heavy); border: 1px solid var(--c-border); }
+        input, textarea { width: 100%; padding: 0.85rem; border-radius: 0.375rem; border: 1px solid var(--c-border); background-color: var(--c-bg-primary); color: var(--c-text-primary); transition: border-color 0.2s ease, box-shadow 0.2s ease; font-size: 1rem; }
+        input::placeholder, textarea::placeholder { color: var(--c-text-secondary); }
+        input:focus, textarea:focus { outline: none; border-color: var(--c-primary); box-shadow: 0 0 0 3px var(--c-shadow-light); }
+        .btn { padding: 0.85rem; border: none; border-radius: 0.375rem; font-weight: 700; font-size: 1rem; transition: all 0.3s ease; cursor: pointer; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-primary { width: 100%; color: #FFFFFF; background: linear-gradient(135deg, var(--c-primary), var(--c-secondary)); box-shadow: 0 4px 15px var(--c-shadow-light); }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 7px 20px var(--c-shadow-heavy); }
+        .btn-danger { background-color: #ef4444; color: white; }
+        .btn-secondary { background-color: #64748b; color: white; }
+
+        .output-card { margin-bottom: 1.5rem; background-color: var(--c-bg-secondary); border-radius: 0.5rem; border: 1px solid var(--c-border); overflow: hidden; }
+        .output-card-header { padding: 0.75rem 1.25rem; display: flex; justify-content: space-between; align-items: center; background-color: rgba(59, 130, 246, 0.08); }
+        html[data-theme="green"] .output-card-header { background-color: rgba(34, 197, 94, 0.08); }
+        html[data-theme="purple"] .output-card-header { background-color: rgba(139, 92, 246, 0.08); }
+        html[data-theme="orange"] .output-card-header { background-color: rgba(249, 115, 22, 0.08); }
+        html.light .output-card-header { background-color: transparent; border-bottom: 1px solid var(--c-border); }
+        .output-card-body { padding: 1.25rem; font-size: 0.95rem; color: var(--c-text-secondary); }
+        .action-btn { background-color: var(--c-bg-primary); border: 1px solid var(--c-border); color: var(--c-text-secondary); padding: 0.25rem 0.6rem; border-radius: 0.25rem; font-size: 0.8rem; transition: all 0.2s ease; }
+        .action-btn:hover { background-color: var(--c-primary); color: var(--c-bg-secondary); border-color: var(--c-primary); }
+        
+        /* --- SKELETON LOADER --- */
+        @keyframes shimmer { 0% { background-position: -1000px 0; } 100% { background-position: 1000px 0; } }
+        .skeleton-card { background-color: var(--c-bg-secondary); border-radius: 0.5rem; border: 1px solid var(--c-border); overflow: hidden; }
+        .skeleton-header { padding: 0.75rem 1.25rem; }
+        .skeleton-header div { width: 40%; height: 20px; background-color: var(--c-skeleton); border-radius: 0.25rem; }
+        .skeleton-body { padding: 1.25rem; }
+        .skeleton-line { height: 16px; background-color: var(--c-skeleton); border-radius: 0.25rem; margin-bottom: 0.75rem; }
+        .skeleton-line.short { width: 60%; }
+        .skeleton-card [class^="skeleton-"] div { animation: shimmer 2s infinite linear; background: linear-gradient(to right, var(--c-skeleton) 4%, #334155 25%, var(--c-skeleton) 36%); background-size: 1000px 100%; }
+        html.light .skeleton-card [class^="skeleton-"] div { background: linear-gradient(to right, var(--c-skeleton) 4%, #e2e8f0 25%, var(--c-skeleton) 36%); background-size: 1000px 100%; }
+
+        /* --- Dashboard & Creations --- */
+        .dashboard-stat-card { border-radius: 0.75rem; padding: 2rem; text-align: center; background: var(--c-bg-secondary); border: 1px solid var(--c-border); box-shadow: 0 4px 15px var(--c-shadow-heavy); }
+        .dashboard-stat-card h3 { font-size: 2.75rem; font-weight: 800; color: var(--c-primary); }
+        .dashboard-stat-card p { margin-top: 0.5rem; font-size: 1rem; color: var(--c-text-secondary); font-weight: 500; }
+        .creation-item { background-color: var(--c-bg-secondary); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; border: 1px solid var(--c-border); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        .creation-item:hover { transform: translateY(-4px); box-shadow: 0 10px 20px var(--c-shadow-heavy); }
+        
+        /* --- Modal Styles --- */
+        .modal-overlay { position: fixed; inset: 0; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 50; opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0s 0.3s; }
+        .modal-overlay.active { opacity: 1; visibility: visible; transition-delay: 0s; }
+        .modal-content { background-color: var(--c-bg-secondary); border-radius: 0.75rem; width: 90%; max-width: 420px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transform: scale(0.95); opacity: 0; transition: transform 0.3s, opacity 0.3s; border: 1px solid var(--c-border); }
+        .modal-overlay.active .modal-content { transform: scale(1); opacity: 1; }
+        .modal-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--c-border); }
+        .modal-body { padding: 1.5rem; max-height: 60vh; overflow-y: auto; color: var(--c-text-secondary); }
+        .modal-body h3 { color: var(--c-primary); font-weight: 700; }
+        .modal-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--c-border); display: flex; gap: 0.5rem; }
+        .lang-btn { background-color: var(--c-bg-primary); color: var(--c-text-primary); border: 1px solid var(--c-border); padding: 0.75rem; border-radius: 0.375rem; text-align: center; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
+        .lang-btn:hover { background-color: var(--c-primary); color: white; border-color: var(--c-primary); }
+
+        /* --- Theme Color Swatches --- */
+        .color-swatch { width: 40px; height: 40px; border-radius: 50%; border: 3px solid var(--c-border); cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .color-swatch:hover { transform: scale(1.1); }
+        .color-swatch.active { box-shadow: 0 0 0 4px var(--c-primary); transform: scale(1.1); }
+
+        /* --- Scrollbar --- */
+        .app-main-content::-webkit-scrollbar, .modal-body::-webkit-scrollbar { width: 6px; }
+        .app-main-content::-webkit-scrollbar-track, .modal-body::-webkit-scrollbar-track { background: transparent; }
+        .app-main-content::-webkit-scrollbar-thumb, .modal-body::-webkit-scrollbar-thumb { background: var(--c-text-secondary); border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+    <!-- Animated Blob Container -->
+    <div class="blob-c">
+        <div class="blob"></div>
+        <div class="blob one"></div>
+        <div class="blob two"></div>
+        <div class="blob three"></div>
+        <div class="blob four"></div>
+        <div class="blob five"></div>
+    </div>
+
+    <div class="mobile-app-container">
+        <!-- App Header -->
+        <header class="app-header">
+            <h1>Prompt Studio</h1>
+            <button id="themeToggle" class="p-2 rounded-md" aria-label="Toggle theme">
+                <i class="fas fa-sun text-lg"></i>
+                <i class="fas fa-moon text-lg hidden"></i>
+            </button>
+        </header>
+
+        <!-- Main Content Area (for views) -->
+        <main class="app-main-content">
+            <!-- Generator View -->
+            <section id="view-generator" class="app-view">
+                 <div class="card space-y-4">
+                    <h2 class="text-xl font-bold text-center">Prompt Enhancer</h2>
+                    <form id="promptForm" class="space-y-4">
+                        <div>
+                            <textarea id="promptInput" rows="5" required placeholder="Enter your core idea..."></textarea>
+                        </div>
+                        <button type="submit" id="generateButton" class="btn btn-primary flex items-center justify-center space-x-2">
+                            <i class="fas fa-rocket"></i>
+                            <span>Enhance & Save Prompt</span>
+                        </button>
+                    </form>
+                </div>
+                <!-- SKELETON LOADER -->
+                <div id="skeletonLoader" class="mt-6 hidden">
+                    <div class="skeleton-card">
+                        <div class="skeleton-header"><div></div></div>
+                        <div class="skeleton-body">
+                            <div class="skeleton-line"></div><div class="skeleton-line"></div>
+                            <div class="skeleton-line short"></div><div class="skeleton-line"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- REAL OUTPUT -->
+                <div id="outputSection" class="mt-6 hidden">
+                    <div class="output-card">
+                        <div class="output-card-header">
+                            <h3 class="font-bold"><i class="fas fa-check-double mr-2"></i>AI-Enhanced Result</h3>
+                            <div class="flex items-center space-x-2">
+                                <button class="action-btn" id="translatePromptBtn" title="Translate">
+                                    <i class="fas fa-language"></i>
+                                </button>
+                                <button class="action-btn" id="copyPromptBtn" title="Copy">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="output-card-body">
+                            <textarea id="generatedPromptOutput" rows="8" class="w-full bg-transparent border-0 p-0 text-inherit resize-none" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Other Views -->
+            <section id="view-dashboard" class="app-view"></section>
+            <section id="view-creations" class="app-view"></section>
+            <section id="view-settings" class="app-view space-y-6">
+                <div class="card">
+                    <h2 class="text-xl font-bold mb-4">Theme Colour</h2>
+                    <div id="themeColorSelector" class="flex justify-around items-center">
+                        <button class="color-swatch" data-color="blue" style="background-color: #3b82f6;" title="Blue"></button>
+                        <button class="color-swatch" data-color="green" style="background-color: #22c55e;" title="Green"></button>
+                        <button class="color-swatch" data-color="purple" style="background-color: #8b5cf6;" title="Purple"></button>
+                        <button class="color-swatch" data-color="orange" style="background-color: #f97316;" title="Orange"></button>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2 class="text-xl font-bold mb-4">API Settings</h2>
+                    <div class="space-y-4">
+                        <div>
+                           <label for="geminiApiKey" class="text-sm font-medium text-muted mb-1 block">Override Gemini API Key</label>
+                           <input type="password" id="geminiApiKey" placeholder="Optional: Enter your own API Key">
+                           <p class="text-xs text-muted mt-2">The app has a built-in default key. If it's busy or you prefer to use your own, enter it here. Your key is saved locally.</p>
+                        </div>
+                        <button id="saveApiKeyBtn" class="btn btn-primary w-full">Save Key</button>
+                    </div>
+                </div>
+                 <div class="card">
+                    <h2 class="text-xl font-bold mb-2">About This App</h2>
+                    <p class="text-sm text-muted">Prompt Studio 🚀 enhances ideas into high-quality, structured prompts using Gemini 1.5 Flash. All data is saved locally.</p>
+                </div>
+                <div class="card">
+                    <h2 class="text-xl font-bold mb-2">Danger Zone</h2>
+                    <p class="text-sm text-muted mb-4">This will permanently delete all your saved prompts. This action cannot be undone.</p>
+                    <button id="resetAllButton" class="btn btn-danger w-full">Reset All Data</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Navigation Bar -->
+        <nav class="bottom-nav">
+            <button class="nav-button" data-view-target="dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></button>
+            <button class="nav-button active" data-view-target="generator"><i class="fas fa-magic"></i><span>Generator</span></button>
+            <button class="nav-button" data-view-target="creations"><i class="fas fa-folder-open"></i><span>Creations</span></button>
+            <button class="nav-button" data-view-target="settings"><i class="fas fa-cog"></i><span>Settings</span></button>
+        </nav>
+    </div>
+
+    <!-- Modals & Toast -->
+    <div id="languageModal" class="modal-overlay"></div>
+    <div id="creationDetailModal" class="modal-overlay"></div>
+    <div id="confirmDeleteModal" class="modal-overlay"></div>
+    <div id="toast" class="fixed bottom-24 z-50 p-3 rounded-md text-white font-semibold shadow-lg opacity-0 transition-opacity duration-300"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- CONFIGURATION ---
+        const DEFAULT_API_KEY = "AIzaSyAfeG4rlD65WkwOzk3TY-5-tDW2bdDDZuo";
+        
+        const THEME_STORAGE_KEY = 'promptStudioTheme';
+        const THEME_COLOR_STORAGE_KEY = 'promptStudioThemeColor'; // New key for color
+        const CREATIONS_STORAGE_KEY = 'promptStudioCreations';
+        const API_KEY_STORAGE_KEY = 'promptStudioUserApiKey';
+        const INDIAN_LANGUAGES = [
+            'Assamese', 'Bengali', 'Bodo', 'Dogri', 'Gujarati', 'Hindi',
+            'Kannada', 'Kashmiri', 'Konkani', 'Maithili', 'Malayalam', 'Manipuri',
+            'Marathi', 'Nepali', 'Odia', 'Punjabi', 'Sanskrit', 'Santali',
+            'Sindhi', 'Tamil', 'Telugu', 'Urdu'
+        ];
+
+        // --- THEME & COLOR ---
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+        const sunIcon = themeToggle.querySelector('.fa-sun');
+        const moonIcon = themeToggle.querySelector('.fa-moon');
+
+        function applyLightDarkTheme(theme) {
+            htmlElement.classList.toggle('light', theme === 'light');
+            sunIcon.classList.toggle('hidden', theme === 'dark');
+            moonIcon.classList.toggle('hidden', theme === 'light');
+            localStorage.setItem(THEME_STORAGE_KEY, theme);
+        }
+
+        function applyThemeColor(color) {
+            htmlElement.dataset.theme = color;
+            localStorage.setItem(THEME_COLOR_STORAGE_KEY, color);
+            // Update active state on swatches if visible
+            const colorSwatches = document.querySelectorAll('.color-swatch');
+            colorSwatches.forEach(swatch => {
+                swatch.classList.toggle('active', swatch.dataset.color === color);
+            });
+        }
+        
+        themeToggle.addEventListener('click', () => applyLightDarkTheme(htmlElement.classList.contains('light') ? 'dark' : 'light'));
+
+        // --- VIEW NAVIGATION ---
+        const navButtons = document.querySelectorAll('.nav-button');
+        const views = document.querySelectorAll('.app-view');
+        
+        function switchView(targetViewId) {
+            views.forEach(view => view.classList.toggle('active', view.id === `view-${targetViewId}`));
+            navButtons.forEach(button => button.classList.toggle('active', button.dataset.viewTarget === targetViewId));
+            if (targetViewId === 'dashboard') renderDashboard();
+            if (targetViewId === 'creations') renderCreations();
+            if (targetViewId === 'settings') renderSettings();
+        }
+        navButtons.forEach(button => button.addEventListener('click', () => switchView(button.dataset.viewTarget)));
+
+        // --- LOCAL STORAGE & DATA HANDLING ---
+        const getCreations = () => JSON.parse(localStorage.getItem(CREATIONS_STORAGE_KEY)) || [];
+        const saveCreations = (creations) => localStorage.setItem(CREATIONS_STORAGE_KEY, JSON.stringify(creations));
+        
+        const getActiveApiKey = () => {
+            const userKey = localStorage.getItem(API_KEY_STORAGE_KEY);
+            return userKey || DEFAULT_API_KEY;
+        };
+        const saveUserApiKey = (key) => {
+            if (key) {
+                localStorage.setItem(API_KEY_STORAGE_KEY, key);
+            } else {
+                localStorage.removeItem(API_KEY_STORAGE_KEY);
+            }
+        };
+
+        // --- RENDER FUNCTIONS ---
+        function renderDashboard() {
+            const creations = getCreations();
+            const totalWords = creations.reduce((acc, c) => acc + (c.enhancedPrompt?.split(' ').length || 0), 0);
+            document.getElementById('view-dashboard').innerHTML = `<div class="space-y-6"><div class="dashboard-stat-card"><h3>${creations.length}</h3><p>Total Prompts Generated</p></div><div class="dashboard-stat-card"><h3>${totalWords.toLocaleString()}</h3><p>Approx. Words Generated</p></div></div>`;
+        }
+
+        function renderCreations() {
+            const container = document.getElementById('view-creations');
+            container.innerHTML = '';
+            const creations = getCreations();
+            if (creations.length === 0) {
+                container.innerHTML = `<p class="text-center text-muted">No prompts saved yet. Go to the Generator to create one!</p>`;
+                return;
+            }
+            creations.sort((a, b) => b.id - a.id).forEach(c => {
+                const item = document.createElement('div');
+                item.className = 'creation-item';
+                item.innerHTML = `<h4 class="font-semibold break-words truncate">${c.userInput || 'Untitled Prompt'}</h4><p class="text-sm text-muted">${new Date(c.id).toLocaleDateString()}</p>`;
+                item.onclick = () => showCreationDetail(c.id);
+                container.appendChild(item);
+            });
+        }
+        
+        function renderSettings() { 
+            document.getElementById('geminiApiKey').value = localStorage.getItem(API_KEY_STORAGE_KEY) || ''; 
+            // Update active swatch state when settings tab is opened
+            const currentThemeColor = localStorage.getItem(THEME_COLOR_STORAGE_KEY) || 'blue';
+            const colorSwatches = document.querySelectorAll('.color-swatch');
+            colorSwatches.forEach(swatch => {
+                swatch.classList.toggle('active', swatch.dataset.color === currentThemeColor);
+            });
+        }
+
+        // --- THEME COLOR SELECTION LOGIC ---
+        document.getElementById('themeColorSelector').addEventListener('click', (e) => {
+            if (e.target.classList.contains('color-swatch')) {
+                const color = e.target.dataset.color;
+                applyThemeColor(color);
+                showToast(`Theme changed to ${color.charAt(0).toUpperCase() + color.slice(1)}!`, 'success');
+            }
+        });
+
+        function populateLanguageModal() {
+            const languageModal = document.getElementById('languageModal');
+            let languageButtonsHTML = '';
+            INDIAN_LANGUAGES.forEach(lang => {
+                languageButtonsHTML += `<button class="lang-btn" data-lang="${lang}">${lang}</button>`;
+            });
+            languageModal.innerHTML = `<div class="modal-content"><div class="modal-header"><h2 class="text-lg font-bold">Translate to Indian Language</h2></div><div class="modal-body grid grid-cols-2 sm:grid-cols-3 gap-3">${languageButtonsHTML}</div><div class="modal-footer"><button onclick="closeModal('languageModal')" class="btn btn-secondary w-full">Cancel</button></div></div>`;
+            languageModal.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    closeModal('languageModal');
+                    runTranslation(btn.dataset.lang);
+                });
+            });
+        }
+
+        // --- MODAL & DELETION LOGIC ---
+        const confirmDeleteModal = document.getElementById('confirmDeleteModal');
+        const creationDetailModal = document.getElementById('creationDetailModal');
+        
+        window.openModal = (modalId) => document.getElementById(modalId).classList.add('active');
+        window.closeModal = (modalId) => document.getElementById(modalId).classList.remove('active');
+
+        function showCreationDetail(id) {
+            const creation = getCreations().find(c => c.id === id);
+            if (!creation) return;
+            creationDetailModal.innerHTML = `<div class="modal-content"><div class="modal-header"><h2 class="text-lg font-bold">Prompt Details</h2></div><div class="modal-body space-y-4"><div><h3 class="font-bold mb-1">Original Input</h3><p>${creation.userInput}</p></div><div><h3 class="font-bold mb-1 mt-3">Enhanced Prompt</h3><p class="whitespace-pre-wrap">${creation.enhancedPrompt}</p></div><button id="deleteSingleCreationBtn" class="btn btn-danger w-full mt-4">Delete this Prompt</button></div><div class="modal-footer"><button id="copyAllBtn" class="btn btn-primary w-full">Copy Enhanced Prompt</button><button onclick="closeModal('creationDetailModal')" class="btn btn-secondary w-full">Close</button></div></div>`;
+            creationDetailModal.querySelector('#deleteSingleCreationBtn').onclick = () => handleDeleteCreation(id);
+            creationDetailModal.querySelector('#copyAllBtn').onclick = () => copyTextToClipboard(creation.enhancedPrompt, 'Enhanced prompt copied!');
+            openModal('creationDetailModal');
+        }
+
+        function showConfirmModal(title, text, onConfirm) {
+            confirmDeleteModal.innerHTML = `<div class="modal-content"><div class="modal-header"><h2 class="text-lg font-bold">${title}</h2></div><div class="modal-body"><p>${text}</p></div><div class="modal-footer"><button id="confirmBtn" class="btn btn-danger w-full">Confirm</button><button onclick="closeModal('confirmDeleteModal')" class="btn btn-secondary w-full">Cancel</button></div></div>`;
+            confirmDeleteModal.querySelector('#confirmBtn').onclick = () => onConfirm();
+            openModal('confirmDeleteModal');
+        }
+
+        function handleDeleteCreation(id) {
+            closeModal('creationDetailModal');
+            showConfirmModal('Confirm Deletion', 'Are you sure you want to permanently delete this prompt?', () => {
+                saveCreations(getCreations().filter(c => c.id !== id));
+                renderCreations();
+                closeModal('confirmDeleteModal');
+                showToast('Prompt deleted!', 'success');
+            });
+        }
+
+        document.getElementById('resetAllButton').addEventListener('click', () => {
+            showConfirmModal('Confirm Reset', 'Are you sure you want to delete ALL saved data? This is permanent.', () => {
+                saveCreations([]);
+                renderCreations();
+                renderDashboard();
+                closeModal('confirmDeleteModal');
+                showToast('All data has been reset.', 'success');
+            });
+        });
+
+        // --- API KEY & GENERATOR ---
+        document.getElementById('saveApiKeyBtn').addEventListener('click', () => {
+            const key = document.getElementById('geminiApiKey').value.trim();
+            saveUserApiKey(key);
+            showToast(key ? 'Override API Key saved!' : 'Override key cleared. Using default.', 'success');
+        });
+
+        const promptForm = document.getElementById('promptForm');
+        const generateButton = document.getElementById('generateButton');
+        const skeletonLoader = document.getElementById('skeletonLoader');
+        const outputSection = document.getElementById('outputSection');
+        const generatedPromptOutput = document.getElementById('generatedPromptOutput');
+        
+        async function callGeminiAPI(prompt, apiKey) {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error?.message || `API Error: ${response.status}. The key may be invalid or the model is busy. Try adding your own key in Settings.`);
+            }
+            const data = await response.json();
+            const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!text) throw new Error('Received an empty response from the API.');
+            return text;
+        }
+
+        promptForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const userInput = document.getElementById('promptInput').value.trim();
+            if (!userInput) { showToast('Please enter your idea in the text box.', 'error'); return; }
+            
+            outputSection.classList.add('hidden');
+            skeletonLoader.classList.remove('hidden');
+            generateButton.disabled = true;
+
+            const metaPrompt = `You are a world-class prompt engineer. Your task is to take a user's simple idea and transform it into a high-quality, detailed, and structured prompt that can be used to generate a comprehensive response from an AI model. User's Idea: "${userInput}". Generate the final, enhanced prompt based on this idea. The prompt should be a direct set of instructions for another AI. Do not add any conversational text or introductions like "Here is the enhanced prompt:".`;
+            
+            try {
+                const apiKey = getActiveApiKey();
+                const enhancedPrompt = await callGeminiAPI(metaPrompt, apiKey);
+                generatedPromptOutput.value = enhancedPrompt.trim();
+                const creations = getCreations();
+                creations.unshift({ id: Date.now(), userInput, enhancedPrompt: enhancedPrompt.trim() });
+                saveCreations(creations);
+                
+                outputSection.classList.remove('hidden');
+                generatedPromptOutput.style.height = 'auto';
+                generatedPromptOutput.style.height = `${generatedPromptOutput.scrollHeight}px`;
+                showToast('Prompt enhanced and saved!', 'success');
+            } catch (error) {
+                showToast(`${error.message}`, 'error');
+                outputSection.classList.add('hidden');
+            } finally {
+                skeletonLoader.classList.add('hidden');
+                generateButton.disabled = false;
+            }
+        });
+
+        // --- TRANSLATION LOGIC ---
+        async function runTranslation(targetLanguage) {
+            const textToTranslate = generatedPromptOutput.value.trim();
+            if (!textToTranslate) return;
+
+            outputSection.classList.add('hidden');
+            skeletonLoader.classList.remove('hidden');
+            generateButton.disabled = true;
+            
+            const translateMetaPrompt = `Translate the following text into the Indian language "${targetLanguage}". Provide ONLY the translated text, with no additional commentary, introductions, or formatting changes. Preserve line breaks and structure.\n\n---\n\n${textToTranslate}`;
+
+            try {
+                const apiKey = getActiveApiKey();
+                const translatedText = await callGeminiAPI(translateMetaPrompt, apiKey);
+                generatedPromptOutput.value = translatedText.trim();
+                outputSection.classList.remove('hidden');
+                generatedPromptOutput.style.height = 'auto';
+                generatedPromptOutput.style.height = `${generatedPromptOutput.scrollHeight}px`;
+                showToast(`Translated to ${targetLanguage}!`, 'success');
+            } catch (error) {
+                showToast(`Translation Error: ${error.message}`, 'error');
+                outputSection.classList.remove('hidden');
+            } finally {
+                skeletonLoader.classList.add('hidden');
+                generateButton.disabled = false;
+            }
+        }
+        document.getElementById('translatePromptBtn').addEventListener('click', () => {
+            const textToTranslate = generatedPromptOutput.value.trim();
+            if (!textToTranslate) { showToast('Generate a prompt first.', 'error'); return; }
+            openModal('languageModal');
+        });
+
+        // --- ROBUST COPY FUNCTIONALITY & TOAST ---
+        function copyTextToClipboard(text, successMessage) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => showToast(successMessage)).catch(() => showToast('Failed to copy.', 'error'));
+            } else {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed'; ta.style.left = '-9999px';
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand('copy'); showToast(successMessage); } catch (err) { showToast('Failed to copy.', 'error'); }
+                document.body.removeChild(ta);
+            }
+        }
+        document.getElementById('copyPromptBtn').addEventListener('click', () => {
+            const textToCopy = generatedPromptOutput.value;
+            if (textToCopy) copyTextToClipboard(textToCopy, 'Prompt copied to clipboard!');
+        });
+        
+        const toast = document.getElementById('toast');
+        function showToast(message, type = 'success') {
+            toast.textContent = message;
+            toast.className = `fixed bottom-24 z-50 p-3 rounded-md text-white font-semibold shadow-lg opacity-0 transition-opacity duration-300 ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}`;
+            toast.classList.remove('opacity-0');
+            setTimeout(() => toast.classList.add('opacity-0'), 3500);
+        }
+
+        // --- INITIALIZATION ---
+        applyLightDarkTheme(localStorage.getItem(THEME_STORAGE_KEY) || 'dark');
+        applyThemeColor(localStorage.getItem(THEME_COLOR_STORAGE_KEY) || 'blue');
+        switchView('generator');
+        populateLanguageModal();
+    });
+</script>
+</body>
+</html>
